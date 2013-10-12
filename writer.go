@@ -7,33 +7,10 @@ import (
 	"reflect"
 )
 
-type EncBasic func(i interface{}) error
+type WriteBasic func(i interface{}) error
 
 type Encoder interface {
-	Write(w io.Writer, v reflect.Value, b EncBasic) error
-}
-
-// ----------------------------------------------------------------------------
-// Slice Encoder
-// ----------------------------------------------------------------------------
-
-type SliceEncoder int
-
-func (se SliceEncoder) Write(w io.Writer, v reflect.Value, b EncBasic) (err error) {
-	if err = binary.Write(w, binary.LittleEndian, Vector); err != nil {
-		return
-	}
-	length := v.Len()
-	if err = binary.Write(w, binary.LittleEndian, int32(length)); err != nil {
-		return
-	}
-	for i := 0; i < length; i++ {
-		item := v.Index(i).Interface()
-		if err = b(item); err != nil {
-			return
-		}
-	}
-	return nil
+	Write(w io.Writer, v reflect.Value, b WriteBasic) error
 }
 
 // ----------------------------------------------------------------------------
@@ -42,7 +19,7 @@ func (se SliceEncoder) Write(w io.Writer, v reflect.Value, b EncBasic) (err erro
 
 type ChanEncoder int
 
-func (ce ChanEncoder) Write(w io.Writer, v reflect.Value, b EncBasic) (err error) {
+func (ce ChanEncoder) Write(w io.Writer, v reflect.Value, b WriteBasic) (err error) {
 	if err = binary.Write(w, binary.LittleEndian, List); err != nil {
 		return
 	}
@@ -64,7 +41,7 @@ func (ce ChanEncoder) Write(w io.Writer, v reflect.Value, b EncBasic) (err error
 
 type MapEncoder int
 
-func (me MapEncoder) Write(w io.Writer, v reflect.Value, b EncBasic) (err error) {
+func (me MapEncoder) Write(w io.Writer, v reflect.Value, b WriteBasic) (err error) {
 	if err = binary.Write(w, binary.LittleEndian, Map); err != nil {
 		return
 	}
