@@ -3,12 +3,7 @@ package typedbytes
 import (
 	"bytes"
 	"github.com/markchadwick/spec"
-	"testing"
 )
-
-func Test(t *testing.T) {
-	spec.Run(t)
-}
 
 var _ = spec.Suite("Typed bytes writer", func(c *spec.C) {
 	buf := new(bytes.Buffer)
