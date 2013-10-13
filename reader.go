@@ -2,16 +2,38 @@ package typedbytes
 
 import (
 	"encoding/binary"
+	"errors"
 	"fmt"
 	"io"
 )
 
+var Terminator = errors.New("Terminator byte")
+
+type ReadBasic func() (interface{}, error)
+
+type Decoder interface {
+	Read(io.Reader, ReadBasic) (interface{}, error)
+}
+
 type Reader struct {
-	r io.Reader
+	r        io.Reader
+	decoders map[ByteType]Decoder
 }
 
 func NewReader(r io.Reader) *Reader {
-	return &Reader{r}
+	reader := &Reader{
+		r:        r,
+		decoders: make(map[ByteType]Decoder),
+	}
+	reader.Register(Vector, SliceCodec)
+	reader.Register(List, ChanCodec)
+	reader.Register(Map, MapCodec)
+
+	return reader
+}
+
+func (r *Reader) Register(b ByteType, dec Decoder) {
+	r.decoders[b] = dec
 }
 
 func (r *Reader) Next() (i interface{}, err error) {
@@ -21,7 +43,7 @@ func (r *Reader) Next() (i interface{}, err error) {
 	}
 	switch bt {
 	default:
-		return nil, fmt.Errorf("Unknown byte type: %v", bt)
+		return r.readComplex(bt)
 	case Bytes:
 		return r.readBytes()
 	case Byte:
@@ -38,8 +60,17 @@ func (r *Reader) Next() (i interface{}, err error) {
 		return r.readFloat64()
 	case String:
 		return r.readString()
+	case ByteType(255):
+		return nil, Terminator
 	}
-	return
+}
+
+func (r *Reader) readComplex(bt ByteType) (interface{}, error) {
+	dec, ok := r.decoders[bt]
+	if !ok {
+		return nil, fmt.Errorf("No decoder for byte type: %d", bt)
+	}
+	return dec.Read(r.r, r.Next)
 }
 
 func (r *Reader) readBytes() ([]byte, error) {

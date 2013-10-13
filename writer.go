@@ -13,57 +13,6 @@ type Encoder interface {
 	Write(w io.Writer, v reflect.Value, b WriteBasic) error
 }
 
-// ----------------------------------------------------------------------------
-// Chan Encoder
-// ----------------------------------------------------------------------------
-
-type ChanEncoder int
-
-func (ce ChanEncoder) Write(w io.Writer, v reflect.Value, b WriteBasic) (err error) {
-	if err = binary.Write(w, binary.LittleEndian, List); err != nil {
-		return
-	}
-	for {
-		next, ok := v.Recv()
-		if !ok {
-			break
-		}
-		if err = b(next.Interface()); err != nil {
-			return err
-		}
-	}
-	return binary.Write(w, binary.LittleEndian, uint8(255))
-}
-
-// ----------------------------------------------------------------------------
-// Map Encoder
-// ----------------------------------------------------------------------------
-
-type MapEncoder int
-
-func (me MapEncoder) Write(w io.Writer, v reflect.Value, b WriteBasic) (err error) {
-	if err = binary.Write(w, binary.LittleEndian, Map); err != nil {
-		return
-	}
-	length := v.Len()
-	if err = binary.Write(w, binary.LittleEndian, int32(length)); err != nil {
-		return
-	}
-	for _, key := range v.MapKeys() {
-		if err = b(key.Interface()); err != nil {
-			return
-		}
-		if err = b(v.MapIndex(key).Interface()); err != nil {
-			return
-		}
-	}
-	return
-}
-
-// ----------------------------------------------------------------------------
-// Writer
-// ----------------------------------------------------------------------------
-
 type Writer struct {
 	w        io.Writer
 	encoders map[reflect.Kind]Encoder
@@ -74,9 +23,9 @@ func NewWriter(w io.Writer) *Writer {
 		w:        w,
 		encoders: make(map[reflect.Kind]Encoder),
 	}
-	writer.Register(reflect.Slice, SliceEncoder(0))
-	writer.Register(reflect.Chan, ChanEncoder(0))
-	writer.Register(reflect.Map, MapEncoder(0))
+	writer.Register(reflect.Slice, SliceCodec)
+	writer.Register(reflect.Chan, ChanCodec)
+	writer.Register(reflect.Map, MapCodec)
 	return writer
 }
 

@@ -6,9 +6,11 @@ import (
 	"reflect"
 )
 
-type SliceEncoder int
+type sliceCodec int
 
-func (se SliceEncoder) Write(w io.Writer, v reflect.Value, b WriteBasic) (err error) {
+var SliceCodec = sliceCodec(0)
+
+func (sliceCodec) Write(w io.Writer, v reflect.Value, b WriteBasic) (err error) {
 	if err = binary.Write(w, binary.LittleEndian, Vector); err != nil {
 		return
 	}
@@ -25,6 +27,18 @@ func (se SliceEncoder) Write(w io.Writer, v reflect.Value, b WriteBasic) (err er
 	return nil
 }
 
-func (se SliceEncoder) Read(r io.Writer, v reflect.Value, b WriteBasic) (err error) {
-	return nil
+func (sliceCodec) Read(r io.Reader, next ReadBasic) (_ interface{}, err error) {
+	var length int32
+	if err = binary.Read(r, binary.LittleEndian, &length); err != nil {
+		return
+	}
+	vs := make([]interface{}, length)
+	for i := 0; i < int(length); i++ {
+		item, err := next()
+		if err != nil {
+			return nil, err
+		}
+		vs[i] = item
+	}
+	return vs, err
 }
