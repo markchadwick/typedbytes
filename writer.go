@@ -14,11 +14,11 @@ type Encoder interface {
 }
 
 type Writer struct {
-	w        io.Writer
+	w        io.WriteCloser
 	encoders map[reflect.Kind]Encoder
 }
 
-func NewWriter(w io.Writer) *Writer {
+func NewWriter(w io.WriteCloser) *Writer {
 	writer := &Writer{
 		w:        w,
 		encoders: make(map[reflect.Kind]Encoder),
@@ -27,6 +27,10 @@ func NewWriter(w io.Writer) *Writer {
 	writer.Register(reflect.Chan, ChanCodec)
 	writer.Register(reflect.Map, MapCodec)
 	return writer
+}
+
+func (w *Writer) Close() error {
+	return w.w.Close()
 }
 
 func (w *Writer) Register(t reflect.Kind, enc Encoder) {

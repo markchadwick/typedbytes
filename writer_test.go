@@ -1,12 +1,11 @@
 package typedbytes
 
 import (
-	"bytes"
 	"github.com/markchadwick/spec"
 )
 
 var _ = spec.Suite("Typed bytes writer", func(c *spec.C) {
-	buf := new(bytes.Buffer)
+	buf := NoOpCloser()
 	w := NewWriter(buf)
 
 	c.It("should encode a byte slice", func(c *spec.C) {

@@ -10,12 +10,32 @@ implementation.
 ```go
 import (
   "github.com/markchadwick/typedbytes"
+  "log"
 )
 
 func main() {
-  buf := new(bytes.Buffer)
-  r := typedbytes.NewReader(buf)
-  w := typedbytes.NewWriter(buf)
+  buf := NewBuffer()
+  r := NewReader(buf)
+  w := NewWriter(buf)
+  done := make(chan bool)
+
+  // Start a goroutine to print every value to the log
+  go func() {
+    defer func() {
+      done <- true
+    }()
+
+    for {
+      value, err := r.Next()
+      if err != nil {
+        if err == io.EOF {
+          return
+        }
+        log.Printf("Error reading: %s", err.Error())
+      }
+      log.Printf("Read value: %v", value)
+    }
+  }()
 
   // Write some values to the buffer
   w.Write(true)
@@ -24,18 +44,8 @@ func main() {
   w.Write(int32(123))
   w.Write(float64(123))
   w.Write(map[string]string{"name": "Frank", "job": "Fun"})
-
-  // Print each value read from the buffer
-  for {
-    value, err := r.Next()
-    if err != nil {
-      if err == io.EOF {
-        return
-      }
-      log.Printf("Error reading: %s", err.Error())
-    }
-    log.Printf("Read value: %v", value)
-  }
+  w.Close()
+  <-done
 }
 ```
 

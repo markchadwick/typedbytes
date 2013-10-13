@@ -1,13 +1,12 @@
 package typedbytes
 
 import (
-	"bytes"
 	"github.com/markchadwick/spec"
 	"io"
 )
 
 var _ = spec.Suite("Typed bytes reader", func(c *spec.C) {
-	buf := new(bytes.Buffer)
+	buf := NoOpCloser()
 	w := NewWriter(buf)
 	r := NewReader(buf)
 
