@@ -13,29 +13,29 @@ import (
 )
 
 func main() {
-	buf := new(bytes.Buffer)
-	r := typedbytes.NewReader(buf)
-	w := typedbytes.NewWriter(buf)
+  buf := new(bytes.Buffer)
+  r := typedbytes.NewReader(buf)
+  w := typedbytes.NewWriter(buf)
 
-	// Write some values to the buffer
-	w.Write(true)
-	w.Write(false)
+  // Write some values to the buffer
+  w.Write(true)
+  w.Write(false)
   w.Write([]bool{true, false})
   w.Write(int32(123))
   w.Write(float64(123))
   w.Write(map[string]string{"name": "Frank", "job": "Fun"})
 
-	// Print each value read from the buffer
-	for {
-		value, err := r.Next()
-		if err != nil {
-			if err == io.EOF {
-				return
-			}
-			log.Printf("Error reading: %s", err.Error())
-		}
-		log.Printf("Read value: %v", value)
-	}
+  // Print each value read from the buffer
+  for {
+    value, err := r.Next()
+    if err != nil {
+      if err == io.EOF {
+        return
+      }
+      log.Printf("Error reading: %s", err.Error())
+    }
+    log.Printf("Read value: %v", value)
+  }
 }
 ```
 

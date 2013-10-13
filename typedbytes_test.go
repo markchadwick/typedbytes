@@ -17,10 +17,10 @@ func example() {
 	log.Printf("-----------------------------------------------------")
 	w.Write(true)
 	w.Write(false)
-  w.Write([]bool{true, false})
-  w.Write(int32(123))
-  w.Write(float64(123))
-  w.Write(map[string]string{"name": "Frank", "job": "Fun"})
+	w.Write([]bool{true, false})
+	w.Write(int32(123))
+	w.Write(float64(123))
+	w.Write(map[string]string{"name": "Frank", "job": "Fun"})
 
 	// Print each value read from the buffer
 	for {
