@@ -22,10 +22,10 @@ func example() {
 		for {
 			value, err := r.Next()
 			if err != nil {
-				if err == io.EOF {
-					return
+				if err != io.EOF {
+					log.Printf("Error reading: %s", err.Error())
 				}
-				log.Printf("Error reading: %s", err.Error())
+				return
 			}
 			log.Printf("Read value: %v", value)
 		}
@@ -44,4 +44,5 @@ func example() {
 
 func Test(t *testing.T) {
 	spec.Run(t)
+	example()
 }
