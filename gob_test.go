@@ -27,7 +27,7 @@ var _ = spec.Suite("GOB Codec", func(c *spec.C) {
 		c.Assert(err).IsNil()
 
 		var bt ByteType
-		err = binary.Read(buf, binary.LittleEndian, &bt)
+		err = binary.Read(buf, binary.BigEndian, &bt)
 		c.Assert(err).IsNil()
 		c.Assert(bt).Equals(Gob)
 

@@ -105,24 +105,24 @@ func (w *Writer) writeString(i string) (err error) {
 }
 
 func (w *Writer) write(t ByteType, i interface{}) (err error) {
-	if err = binary.Write(w.w, binary.LittleEndian, t); err != nil {
+	if err = binary.Write(w.w, binary.BigEndian, t); err != nil {
 		return
 	}
 
-	return binary.Write(w.w, binary.LittleEndian, i)
+	return binary.Write(w.w, binary.BigEndian, i)
 }
 
 func (w *Writer) writeDelimited(t ByteType, i []byte) (err error) {
-	if err = binary.Write(w.w, binary.LittleEndian, t); err != nil {
+	if err = binary.Write(w.w, binary.BigEndian, t); err != nil {
 		return
 	}
 	length := int32(len(i))
-	if err = binary.Write(w.w, binary.LittleEndian, length); err != nil {
+	if err = binary.Write(w.w, binary.BigEndian, length); err != nil {
 		return
 	}
 
 	_, err = w.w.Write(i)
 	return
 
-	return binary.Write(w.w, binary.LittleEndian, i)
+	return binary.Write(w.w, binary.BigEndian, i)
 }

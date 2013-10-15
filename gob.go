@@ -12,7 +12,7 @@ type gobCodec int
 var GobCodec = gobCodec(0)
 
 func (gobCodec) Write(w io.Writer, v reflect.Value, b WriteBasic) (err error) {
-	if err = binary.Write(w, binary.LittleEndian, Gob); err != nil {
+	if err = binary.Write(w, binary.BigEndian, Gob); err != nil {
 		return
 	}
 	return gob.NewEncoder(w).EncodeValue(v)

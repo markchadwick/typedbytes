@@ -124,12 +124,12 @@ func (r *Reader) readString() (string, error) {
 }
 
 func (r *Reader) read(i interface{}) error {
-	return binary.Read(r.r, binary.LittleEndian, i)
+	return binary.Read(r.r, binary.BigEndian, i)
 }
 
 func (r *Reader) readDelimited() (bs []byte, err error) {
 	var length int32
-	if err = binary.Read(r.r, binary.LittleEndian, &length); err != nil {
+	if err = binary.Read(r.r, binary.BigEndian, &length); err != nil {
 		return
 	}
 	bs = make([]byte, length)
@@ -139,6 +139,6 @@ func (r *Reader) readDelimited() (bs []byte, err error) {
 
 func (r *Reader) readType() (bt ByteType, err error) {
 	bt = ByteType(255)
-	err = binary.Read(r.r, binary.LittleEndian, &bt)
+	err = binary.Read(r.r, binary.BigEndian, &bt)
 	return
 }

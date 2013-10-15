@@ -12,7 +12,7 @@ type chanCodec int
 var ChanCodec = chanCodec(0)
 
 func (chanCodec) Write(w io.Writer, v reflect.Value, b WriteBasic) (err error) {
-	if err = binary.Write(w, binary.LittleEndian, List); err != nil {
+	if err = binary.Write(w, binary.BigEndian, List); err != nil {
 		return
 	}
 	for {
@@ -24,7 +24,7 @@ func (chanCodec) Write(w io.Writer, v reflect.Value, b WriteBasic) (err error) {
 			return err
 		}
 	}
-	return binary.Write(w, binary.LittleEndian, uint8(255))
+	return binary.Write(w, binary.BigEndian, uint8(255))
 }
 
 // WARNING: Readers must be read sequentially. This method will start a

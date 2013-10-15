@@ -11,11 +11,11 @@ type mapCodec int
 var MapCodec = mapCodec(0)
 
 func (mapCodec) Write(w io.Writer, v reflect.Value, b WriteBasic) (err error) {
-	if err = binary.Write(w, binary.LittleEndian, Map); err != nil {
+	if err = binary.Write(w, binary.BigEndian, Map); err != nil {
 		return
 	}
 	length := v.Len()
-	if err = binary.Write(w, binary.LittleEndian, int32(length)); err != nil {
+	if err = binary.Write(w, binary.BigEndian, int32(length)); err != nil {
 		return
 	}
 	for _, key := range v.MapKeys() {
@@ -31,7 +31,7 @@ func (mapCodec) Write(w io.Writer, v reflect.Value, b WriteBasic) (err error) {
 
 func (mapCodec) Read(r io.Reader, next ReadBasic) (_ interface{}, err error) {
 	var length int32
-	if err = binary.Read(r, binary.LittleEndian, &length); err != nil {
+	if err = binary.Read(r, binary.BigEndian, &length); err != nil {
 		return
 	}
 	m := make(map[interface{}]interface{})

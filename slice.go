@@ -11,11 +11,11 @@ type sliceCodec int
 var SliceCodec = sliceCodec(0)
 
 func (sliceCodec) Write(w io.Writer, v reflect.Value, b WriteBasic) (err error) {
-	if err = binary.Write(w, binary.LittleEndian, Vector); err != nil {
+	if err = binary.Write(w, binary.BigEndian, Vector); err != nil {
 		return
 	}
 	length := v.Len()
-	if err = binary.Write(w, binary.LittleEndian, int32(length)); err != nil {
+	if err = binary.Write(w, binary.BigEndian, int32(length)); err != nil {
 		return
 	}
 	for i := 0; i < length; i++ {
@@ -29,7 +29,7 @@ func (sliceCodec) Write(w io.Writer, v reflect.Value, b WriteBasic) (err error) 
 
 func (sliceCodec) Read(r io.Reader, next ReadBasic) (_ interface{}, err error) {
 	var length int32
-	if err = binary.Read(r, binary.LittleEndian, &length); err != nil {
+	if err = binary.Read(r, binary.BigEndian, &length); err != nil {
 		return
 	}
 	vs := make([]interface{}, length)
