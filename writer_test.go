@@ -16,8 +16,8 @@ var _ = spec.Suite("Typed bytes writer", func(c *spec.C) {
 		c.Assert(out).HasLen(1 + 4 + 5)
 		c.Assert(ByteType(out[0])).Equals(Bytes)
 
-		// 32 bit LE
-		c.Assert(out[1]).Equals(uint8(5))
+		// 32 bit BE
+		c.Assert(out[4]).Equals(uint8(5))
 
 		msg := out[5:]
 		c.Assert(string(msg)).Equals("hello")
@@ -60,10 +60,10 @@ var _ = spec.Suite("Typed bytes writer", func(c *spec.C) {
 		out := buf.Bytes()
 		c.Assert(out).HasLen(1 + 4)
 		c.Assert(ByteType(out[0])).Equals(Int)
-		c.Assert(out[1]).Equals(byte(0x66))
-		c.Assert(out[2]).Equals(byte(0xfd))
-		c.Assert(out[3]).Equals(byte(0xff))
-		c.Assert(out[4]).Equals(byte(0xff))
+		c.Assert(out[4]).Equals(byte(0x66))
+		c.Assert(out[3]).Equals(byte(0xfd))
+		c.Assert(out[2]).Equals(byte(0xff))
+		c.Assert(out[1]).Equals(byte(0xff))
 	})
 
 	c.It("should encode an int64", func(c *spec.C) {
@@ -117,7 +117,7 @@ var _ = spec.Suite("Typed bytes writer", func(c *spec.C) {
 		out := buf.Bytes()
 		c.Assert(out).HasLen(1 + 4 + (4 * 5))
 		c.Assert(ByteType(out[0])).Equals(Vector)
-		c.Assert(out[1]).Equals(byte(4))
+		c.Assert(out[4]).Equals(byte(4))
 	})
 
 	c.It("should encode a channel", func(c *spec.C) {
@@ -152,6 +152,6 @@ var _ = spec.Suite("Typed bytes writer", func(c *spec.C) {
 
 		out := buf.Bytes()
 		c.Assert(ByteType(out[0])).Equals(Map)
-		c.Assert(out[1]).Equals(byte(3))
+		c.Assert(out[4]).Equals(byte(3))
 	})
 })
